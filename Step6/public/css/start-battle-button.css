@@ -1,0 +1,54 @@
+.start-battle {
+    display: flex;
+    cursor: pointer;
+    width: 10vw;
+    height: 10vw;
+    border-radius: 50%;
+    background: #d9007d;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    -webkit-box-shadow: 0 8px 0 #52002f, 0 12px 3px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 0 8px 0 #52002f, 0 12px 3px rgba(0, 0, 0, 1);
+    box-shadow: 0 8px 0 #52002f, 0 12px 3px rgba(0, 0, 0, 1);
+    transition: box-shadow 0.1s ease-in-out;
+    text-decoration: none;
+    -webkit-transition: background-color 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out;
+    -moz-transition: background-color 0.2s ease-in-out, -moz-transform 0.2s ease-in-out;
+    -o-transition: background-color 0.2s ease-in-out, -o-transform 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.start-battle:hover,
+.start-battle:hover {
+    background-color: #ec6a9c;
+    text-shadow: 0 -1px 1px rgba(175, 49, 95, 0.9), 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.start-battle:active,
+.start-battle:active {
+    -webkit-transform: translate(0, 4px);
+    -moz-transform: translate(0, 4px);
+    -o-transform: translate(0, 4px);
+    transform: translate(0, 4px);
+    -webkit-box-shadow: 0 5px 0 #52002f, 0 8px 3px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 0 5px 0 #52002f, 0 8px 3px rgba(0, 0, 0, 1);
+    box-shadow: 0 5px 0 #52002f, 0 8px 3px rgba(0, 0, 0, 1);
+}
+
+.start-battle:hover,
+.start-battle:hover,
+.start-battle:active p,
+.start-battle:active p {
+    text-shadow: 0 -1px 1px rgba(175, 49, 95, 0.9), 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.start-battle>p {
+    font-family: "Voyager";
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: 1.7rem;
+    margin: 0;
+    color: #ffffff;
+    text-decoration: none;
+}

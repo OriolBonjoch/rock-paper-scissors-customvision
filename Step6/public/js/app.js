@@ -1,114 +1,126 @@
 function init() {
     // Global variables
     let webcamStream;
-    const appResults = document.getElementById('appResults');
     const appContainer = document.getElementById('appContainer');
-    const videoElement = document.querySelector('video');
-    const appRestartButton = document.getElementById('appRestartButton');
-    
-    const picks = ["rock", "paper", "scissors"];
+    const counterElement = appContainer.querySelector('.app-counter');
+    const startButtonElement = appContainer.querySelector('.start-battle');
+    const restartButtonElement = document.querySelector('.restart-button');
+
+    const userPickElement = appContainer.querySelector('.user-pick');
+    const enginePickElement = appContainer.querySelector('.bot-pick > img');
+    const enginePlayerElement = appContainer.querySelector('.bot-player');
+    const resultsElement = appContainer.querySelector('.pick-result');
+    const counterTextElement = counterElement.querySelector('.app-counter-text');
+
     const getEnginePick = () => {
         return picks[Math.floor(Math.random() * picks.length)];
     };
-    const resultClasses = {
-        WIN: "userWin",
-        LOST: "userLose",
-        DRAW: "draw"
-    };
-    const getWinner = (userPick, enginePick) => {
-        var winnerScheme = {
-            "rock": "scissors",
-            "scissors": "paper",
-            "paper": "rock",
-        },
-        userPickValue = userPick.toLowerCase(),
-        enginePickValue = enginePick.toLowerCase();
-    
-        if (winnerScheme[userPickValue] === enginePickValue) {
-            return "WIN";
-        }
-    
-        if (winnerScheme[enginePickValue] === userPickValue) {
-            return "LOST";
-        }
-    
-        return "DRAW";
+
+    const resultText = {
+        "winner": "you win!!",
+        "loser": "you lose!!",
+        "draw": "tie!!"
     };
 
-    let counter = 0;
-    const counterStart = 0;
-    const counterStop = 4;
-    const counterStep = 1;
-    const timerTick = 1000;
+    const picks = ["rock", "paper", "scissors", "lizard", "spock"];
+
+    const getWinner = (userPick, enginePick) => {
+        const winnerScheme = {
+                "rock": ["scissors", "lizard"],
+                "scissors": ["paper", "lizard"],
+                "paper": ["rock", "spock"],
+                "lizard": ["paper", "spock"],
+                "spock": ["rock", "scissors"]
+            },
+            userPickValue = userPick.toLowerCase(),
+            enginePickValue = enginePick.toLowerCase();
+
+        if (userPick === enginePick) {
+            return "draw";
+        }
+
+        if (winnerScheme[userPickValue].indexOf(enginePickValue) != -1) {
+            return "winner";
+        }
+
+        return "loser";
+    };
+
     const startCounter = () => {
-        let counterTimer;
+        let counter = 0;
+        const counterStart = 0;
+        const counterStop = 3;
+        const counterStep = 1;
+        const timerTick = 1000;
+
         const videoElement = document.querySelector("video");
         const canvasElement = document.querySelector("canvas");
-        const counterElement = appContainer.querySelector(".appCounter");
+
+        let counterTimer;
+
         // Reset elements
         canvasElement.classList.add('hide');
-        appRestartButton.classList.add('hide');
+        startButtonElement.classList.add('hide');
         counterElement.classList.remove('hide');
-        appContainer.querySelector(".resultText").classList.add("hide");
-        appResults.querySelector(".appUserAnswer").innerHTML = "-";
-        appResults.querySelector(".appEngineAnswer").innerHTML = "-";
-        const enginePickElement = document.querySelector('.appEnginePick');
-        picks.forEach(pickLabel => {
-            enginePickElement.classList.remove(pickLabel);
-        });
-        Object.keys(resultClasses).forEach(function (key) {
-            appContainer.classList.remove(resultClasses[key]);
-        });
+
+        userPickElement.classList.add('hide');
+        enginePickElement.parentElement.classList.add('hide');
 
         const counterTimerTick = function counterTimerTick() {
             if (counterTimer) {
                 clearTimeout(counterTimer);
             }
             counter += counterStep;
-            counterElement.innerHTML = counter;
+            counterTextElement.innerHTML = counter;
             if (counter >= counterStop) {
-                counterElement.classList.add('hide');
                 takePhoto(videoElement, canvasElement);
+                videoElement.classList.add('hide');
                 return;
             }
             counterTimer = setTimeout(counterTimerTick, timerTick);
         };
-    
+
         counter = counterStart;
         counterTimerTick();
     };
 
-    const processPrediction = (prediciton, enginePick) => {
-        appResults.querySelector(".appUserAnswer").innerHTML = prediciton;
-        appResults.querySelector(".appEngineAnswer").innerHTML = enginePick;
-        document.querySelector('.appEnginePick').classList.add(enginePick);
+    const processPrediction = (prediction, enginePick) => {
+        counterTextElement.innerHTML = 'VS';
+        userPickElement.src = 'img/user/' + prediction + '.png';
+        enginePickElement.src = 'img/user/' + enginePick + '.png';
+
         // Update results
-        var result = getWinner(prediciton, enginePick);
-        appContainer.classList.add(resultClasses[result]);
-        appContainer.querySelector(".resultText").classList.remove("hide");
-        appContainer.querySelector(".resultText").innerHTML = result;
-        appRestartButton.classList.remove('hide');
+        const result = getWinner(prediction, enginePick);
+        const resultTextElement = resultsElement.firstElementChild;
+        resultTextElement.className = result;
+        resultTextElement.innerText = resultText[result];
+
+        userPickElement.classList.remove('hide');
+        enginePickElement.parentElement.classList.remove('hide');
+        enginePlayerElement.classList.add('hide');
+        resultsElement.classList.remove('hide');
+        restartButtonElement.classList.remove('hide');
     };
 
     const submitImageFromCanvas = (canvasElement) => {
         const request = new XMLHttpRequest();
         request.open('POST', "/predict", true);
         request.setRequestHeader('Content-Type', 'application/octet-stream');
-        request.onload = function () {
+        request.onload = function() {
             if (request.status >= 200 && request.status < 400) {
                 // Success!
-                const prediction = JSON.parse(request.responseText).prediction;
+                const prediction = JSON.parse(request.responseText).prediction.toLowerCase();
                 const enginePick = getEnginePick();
                 processPrediction(prediction, enginePick);
             } else {
                 console.error(request);
             }
         };
-    
-        request.onerror = function (error) {
+
+        request.onerror = function(error) {
             console.error(error);
         };
-    
+
         canvasElement.toBlob(function(blob) {
             request.send(blob);
         });
@@ -125,7 +137,8 @@ function init() {
     };
 
     // Initialize camera
-    function bindCamera(videoElement) {
+    function bindCamera() {
+        const videoElement = document.querySelector('video');
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -141,24 +154,24 @@ function init() {
                     audio: false
                 },
                 // successCallback
-                function (localMediaStream) {
+                function(localMediaStream) {
                     try {
                         videoElement.srcObject = localMediaStream;
                     } catch (error) {
                         videoElement.src = window.URL.createObjectURL(localMediaStream);
                     }
                     webcamStream = localMediaStream;
-                    startCounter();
+                    // startCounter();
                 },
                 // errorCallback
-                function (err) {
+                function(err) {
                     console.log("The following error occured: " + err);
                 }
             );
         } else {
             console.log("getUserMedia not supported");
             appContainer.querySelector(".appCanvasContainer").classList.add('hide');
-            appContainer.querySelector(".photoUploadLabel").classList.remove('hide');
+            appContainer.querySelector(".upload-photo").classList.remove('hide');
             const canvasElement = document.querySelector("canvas");
             const canvasContext = canvasElement.getContext('2d');
             const image = new Image();
@@ -178,10 +191,8 @@ function init() {
         }
     }
 
-    bindCamera(videoElement);
-    appRestartButton.addEventListener("click", function(){
-        startCounter();
-    });
+    bindCamera();
+    startButtonElement.addEventListener("click", startCounter);
 }
 
 function onDocumentReady(fn) {
