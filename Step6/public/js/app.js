@@ -55,10 +55,8 @@ function init() {
         let counterTimer;
 
         // Reset elements
-        canvasElement.classList.add('hide');
         startButtonElement.classList.add('hide');
         counterElement.classList.remove('hide');
-
         userPickElement.classList.add('hide');
         enginePickElement.parentElement.classList.add('hide');
 
