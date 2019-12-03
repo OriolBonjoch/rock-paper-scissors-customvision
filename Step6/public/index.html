@@ -13,9 +13,9 @@
 <body>
     <h1 class="title">Rock Paper Scissors Lizard Spock</h1>
     <h2 class="subtitle">Code and tutorial for "Rock-paper-scissors-lizard-spock" game <br />used at Azure Custom Vision hands-on workshop</h2>
-    <div class="app">
+    <main class="app">
         <div id="appContainer" class="app-content">
-            <div class="console-controls"><img src="img/controls_right.svg" /></div>
+            <div class="console-controls"><img src="img/controls_left.svg" alt="left panel console" /></div>
             <div class="console-screen">
                 <p class="console-text">User</p>
                 <div class="cam-recorder-container">
@@ -25,7 +25,7 @@
                     </div>
                     <video width="800" height="600" autoplay=""></video>
                     <canvas width="800" height="600" class="hide"></canvas>
-                    <img class="user-pick hide" src="" alt="-" />
+                    <img class="user-pick hide" src="img/user/rock.png" alt="user pick" />
                     <div class="pick-result hide">
                         <p>-</p>
                     </div>
@@ -43,9 +43,9 @@
             <div class="console-screen">
                 <p class="console-text">engine</p>
                 <div class="opponent-container">
-                    <img class="bot-player" src="img/bot.png">
+                    <img class="bot-player" src="img/bot.png" alt="engine player">
                     <div class="bot-pick hide">
-                        <img src="">
+                        <img src="img/bot/rock.png" alt="engine pick">
                     </div>
                 </div>
                 <div class="restart-button hide">
@@ -53,10 +53,9 @@
                 </div>
             </div>
 
-            <div class="console-controls"><img src="img/controls_right.svg" /></div>
+            <div class="console-controls"><img src="img/controls_right.svg" alt="right panel console" /></div>
         </div>
-    </div>
-    </div>
+    </main>
     <script src="js/app.js"></script>
 </body>
 

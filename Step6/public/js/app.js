@@ -82,7 +82,7 @@ function init() {
     const processPrediction = (prediction, enginePick) => {
         counterTextElement.innerHTML = 'VS';
         userPickElement.src = 'img/user/' + prediction + '.png';
-        enginePickElement.src = 'img/user/' + enginePick + '.png';
+        enginePickElement.src = 'img/bot/' + enginePick + '.png';
 
         // Update results
         const result = getWinner(prediction, enginePick);
