@@ -1,31 +1,46 @@
 function init() {
-    // Global variables
-    let webcamStream;
-    let counter = 0;
-    const counterStart = 0;
-    const counterStop = 4;
-    const counterStep = 1;
-    const timerTick = 1000;
     const startCounter = () => {
-        let counterTimer;
+        if (!webcamStream) {
+            return;
+        }
+
+        let counter = 0;
+        const counterStart = 0;
+        const counterStop = 3;
+        const counterStep = 1;
+        const timerTick = 1000;
+
         const videoElement = document.querySelector("video");
         const canvasElement = document.querySelector("canvas");
+
+        let counterTimer;
+
+        // Reset elements
+        startButtonElement.classList.add('hide');
+        counterElement.classList.remove('hide');
+        userPickElement.classList.add('hide');
+        enginePickElement.parentElement.classList.add('hide');
 
         const counterTimerTick = function counterTimerTick() {
             if (counterTimer) {
                 clearTimeout(counterTimer);
             }
             counter += counterStep;
+            counterTextElement.innerHTML = counter;
             if (counter >= counterStop) {
                 takePhoto(videoElement, canvasElement);
+                canvasElement.classList.remove('hide');
+                videoElement.classList.add('hide');
                 return;
             }
+
             counterTimer = setTimeout(counterTimerTick, timerTick);
         };
-    
+
         counter = counterStart;
         counterTimerTick();
     };
+
 
     const takePhoto = (videoElement, canvasElement) => {
         const canvasContext = canvasElement.getContext('2d');
@@ -36,7 +51,8 @@ function init() {
     };
 
     // Initialize camera
-    function bindCamera(videoElement) {
+    function bindCamera() {
+        const videoElement = document.querySelector('video');
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -52,7 +68,7 @@ function init() {
                     audio: false
                 },
                 // successCallback
-                function (localMediaStream) {
+                function(localMediaStream) {
                     try {
                         videoElement.srcObject = localMediaStream;
                     } catch (error) {
@@ -62,7 +78,7 @@ function init() {
                     startCounter();
                 },
                 // errorCallback
-                function (err) {
+                function(err) {
                     console.log("The following error occured: " + err);
                 }
             );
@@ -71,8 +87,7 @@ function init() {
         }
     }
 
-    const videoElement = document.querySelector('video');
-    bindCamera(videoElement);
+    bindCamera();
     // Do something
 }
 

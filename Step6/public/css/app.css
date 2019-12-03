@@ -6,6 +6,31 @@
 }
 
 
+/********** Titles **********/
+
+.title {
+    height: 50px;
+    margin: 70px 0 0 0;
+    color: #ffaa44;
+    font-family: "Voyager";
+    font-weight: 300;
+    font-size: 3rem;
+    text-align: center;
+    line-height: 3rem;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.9);
+}
+
+.subtitle {
+    height: 30px;
+    margin: 10px 0 30px 0;
+    color: #ffffff;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 300;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+
 /********** Globals **********/
 
 body {
@@ -59,31 +84,6 @@ body {
 }
 
 
-/********** Titles **********/
-
-.title {
-    height: 50px;
-    margin: 70px 0 0 0;
-    color: #ffaa44;
-    font-family: "Voyager";
-    font-weight: 300;
-    font-size: 3rem;
-    text-align: center;
-    line-height: 3rem;
-    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.9);
-}
-
-.subtitle {
-    height: 30px;
-    margin: 10px 0 30px 0;
-    color: #ffffff;
-    font-family: "Work Sans", sans-serif;
-    font-weight: 300;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
-
 /********** Consoles layout **********/
 
 .console-screen {
@@ -97,6 +97,7 @@ body {
     background-image: url(../img/console_background.svg);
     background-repeat: no-repeat;
     background-size: contain;
+    background-position: center top;
 }
 
 .console-screen>div {
@@ -114,31 +115,6 @@ body {
     box-shadow: 0px -8px 12px -1px rgba(72, 52, 133, 0.56);
     text-align: center;
     vertical-align: middle;
-}
-
-
-/********** Actions And buttons **********/
-
-.app-action {
-    display: flex;
-    flex: 2;
-    justify-content: center;
-    align-items: center;
-}
-
-.app-counter {
-    display: flex;
-    width: 10vw;
-    height: 10vw;
-    border-radius: 50%;
-    box-shadow: inset 0px 0px 0px 10px #231547;
-    align-items: center;
-    justify-content: center;
-    cursor: default;
-    font-family: "Voyager";
-    font-size: 3.5rem;
-    color: #956dea;
-    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.9);
 }
 
 
@@ -164,6 +140,32 @@ body {
 .console-screen canvas {
     height: auto;
     width: 100%;
+    max-width: 24vw
+}
+
+
+/********** Actions And buttons **********/
+
+.app-action {
+    display: flex;
+    flex: 2;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-counter {
+    display: flex;
+    width: 10vw;
+    height: 10vw;
+    border-radius: 50%;
+    box-shadow: inset 0px 0px 0px 10px #231547;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    font-family: "Voyager";
+    font-size: 3.5rem;
+    color: #956dea;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.9);
 }
 
 

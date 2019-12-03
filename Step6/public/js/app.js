@@ -2,9 +2,9 @@ function init() {
     // Global variables
     let webcamStream;
     const appContainer = document.getElementById('appContainer');
+    const restartButtonElement = document.querySelector('.restart-button');
     const counterElement = appContainer.querySelector('.app-counter');
     const startButtonElement = appContainer.querySelector('.start-button');
-    const restartButtonElement = document.querySelector('.restart-button');
 
     const userPickElement = appContainer.querySelector('.user-pick');
     const enginePickElement = appContainer.querySelector('.bot-pick > img');
@@ -43,6 +43,10 @@ function init() {
     };
 
     const startCounter = () => {
+        if (!webcamStream) {
+            return;
+        }
+
         let counter = 0;
         const counterStart = 0;
         const counterStop = 3;
@@ -68,6 +72,7 @@ function init() {
             counterTextElement.innerHTML = counter;
             if (counter >= counterStop) {
                 takePhoto(videoElement, canvasElement);
+                canvasElement.classList.remove('hide');
                 videoElement.classList.add('hide');
                 return;
             }
@@ -122,7 +127,6 @@ function init() {
     };
 
     const takePhoto = (videoElement, canvasElement) => {
-        canvasElement.classList.remove('hide');
         const canvasContext = canvasElement.getContext('2d');
         const videoSettings = webcamStream.getVideoTracks()[0].getSettings();
         canvasContext.drawImage(videoElement,
@@ -141,7 +145,7 @@ function init() {
             navigator.msGetUserMedia);
 
         // Check that getUserMedia is supported
-        if (navigator.getUserMedia) {
+        if (!navigator.getUserMedia) {
             navigator.getUserMedia(
                 // constraints
                 {
@@ -156,7 +160,6 @@ function init() {
                         videoElement.src = window.URL.createObjectURL(localMediaStream);
                     }
                     webcamStream = localMediaStream;
-                    // startCounter();
                 },
                 // errorCallback
                 function(err) {
