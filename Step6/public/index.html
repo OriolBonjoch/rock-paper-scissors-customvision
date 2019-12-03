@@ -6,8 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
     <title>Rock Paper Scissors Lizard Spock</title>
-    <link href="css/start-battle-button.css" rel="stylesheet">
-    <link href="css/restart-button.css" rel="stylesheet">
+    <link href="css/buttons.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
 </head>
 
@@ -20,6 +19,10 @@
             <div class="console-screen">
                 <p class="console-text">User</p>
                 <div class="cam-recorder-container">
+                    <div class="upload-photo-container hide">
+                        <input id="upload-photo" type="file" class="upload-button" />
+                        <label for="upload-photo" class="custom-button">upload file</label>
+                    </div>
                     <video width="800" height="600" autoplay=""></video>
                     <canvas width="800" height="600" class="hide"></canvas>
                     <img class="user-pick hide" src="" alt="-" />
@@ -29,7 +32,7 @@
                 </div>
             </div>
             <div class="app-action">
-                <div class="start-battle">
+                <div class="start-button">
                     <p>start</p>
                     <p>battle</p>
                 </div>

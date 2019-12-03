@@ -3,7 +3,7 @@ function init() {
     let webcamStream;
     const appContainer = document.getElementById('appContainer');
     const counterElement = appContainer.querySelector('.app-counter');
-    const startButtonElement = appContainer.querySelector('.start-battle');
+    const startButtonElement = appContainer.querySelector('.start-button');
     const restartButtonElement = document.querySelector('.restart-button');
 
     const userPickElement = appContainer.querySelector('.user-pick');
@@ -12,18 +12,14 @@ function init() {
     const resultsElement = appContainer.querySelector('.pick-result');
     const counterTextElement = counterElement.querySelector('.app-counter-text');
 
-    const getEnginePick = () => {
-        return picks[Math.floor(Math.random() * picks.length)];
-    };
-
+    const picks = ["rock", "paper", "scissors", "lizard", "spock"];
     const resultText = {
         "winner": "you win!!",
         "loser": "you lose!!",
         "draw": "tie!!"
     };
 
-    const picks = ["rock", "paper", "scissors", "lizard", "spock"];
-
+    const getEnginePick = () => picks[Math.floor(Math.random() * picks.length)];
     const getWinner = (userPick, enginePick) => {
         const winnerScheme = {
                 "rock": ["scissors", "lizard"],
@@ -77,6 +73,7 @@ function init() {
                 videoElement.classList.add('hide');
                 return;
             }
+
             counterTimer = setTimeout(counterTimerTick, timerTick);
         };
 
@@ -170,13 +167,13 @@ function init() {
             );
         } else {
             console.log("getUserMedia not supported");
-            appContainer.querySelector(".appCanvasContainer").classList.add('hide');
-            appContainer.querySelector(".upload-photo").classList.remove('hide');
+            appContainer.querySelector("video").classList.add('hide');
+            appContainer.querySelector(".upload-photo-container").classList.remove('hide');
             const canvasElement = document.querySelector("canvas");
             const canvasContext = canvasElement.getContext('2d');
             const image = new Image();
             image.onload = () => {
-                appContainer.querySelector(".appCanvasContainer").classList.remove('hide');
+                appContainer.querySelector(".upload-photo-container").classList.add('hide');
                 canvasElement.classList.remove('hide');
                 canvasContext.drawImage(image,
                     0, 0, image.width, image.height,
@@ -184,7 +181,7 @@ function init() {
                 submitImageFromCanvas(canvasElement);
                 URL.revokeObjectURL(image.src);
             };
-            document.getElementById("photoUpload").addEventListener('change', (event) => {
+            document.getElementById("upload-photo").addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 image.src = URL.createObjectURL(file);
             });
