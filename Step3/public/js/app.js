@@ -1,37 +1,26 @@
 function init() {
     // Global variables
     let webcamStream;
-    let counter = 0;
-    const counterStart = 0;
-    const counterStop = 4;
-    const counterStep = 1;
-    const timerTick = 1000;
-    const startCounter = () => {
-        let counterTimer;
-        const videoElement = document.querySelector("video");
-        const canvasElement = document.querySelector("canvas");
+    const appContainer = document.getElementById('appContainer');
 
-        const counterTimerTick = function counterTimerTick() {
-            if (counterTimer) {
-                clearTimeout(counterTimer);
+    const setLayout = (visibleElements) => {
+        const elements = ["video", "canvas"];
+
+        for (let i = 0; i < elements.length; i++) {
+            const el = appContainer.querySelector(elements[i]);
+            if (visibleElements.indexOf(elements[i]) == -1) {
+                el.classList.add('hide');
+            } else {
+                el.classList.remove('hide');
             }
-            counter += counterStep;
-            if (counter >= counterStop) {
-                takePhoto(videoElement, canvasElement);
-                return;
-            }
-            counterTimer = setTimeout(counterTimerTick, timerTick);
-        };
-    
-        counter = counterStart;
-        counterTimerTick();
-    };
+        }
+    }
 
     const submitImageFromCanvas = (canvasElement) => {
         const request = new XMLHttpRequest();
         request.open('POST', "/predict", true);
         request.setRequestHeader('Content-Type', 'application/octet-stream');
-        request.onload = function () {
+        request.onload = function() {
             if (request.status >= 200 && request.status < 400) {
                 // Success!
                 console.log(request.responseText);
@@ -39,11 +28,11 @@ function init() {
                 console.error(request);
             }
         };
-    
-        request.onerror = function (error) {
+
+        request.onerror = function(error) {
             console.error(error);
         };
-    
+
         canvasElement.toBlob(function(blob) {
             request.send(blob);
         });
@@ -55,11 +44,12 @@ function init() {
         canvasContext.drawImage(videoElement,
             0, 0, videoSettings.width, videoSettings.height,
             0, 0, canvasElement.width, canvasElement.height);
-        submitImageFromCanvas(canvasElement);
     };
 
     // Initialize camera
-    function bindCamera(videoElement) {
+    function bindCamera() {
+        const videoElement = document.querySelector('video');
+
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -75,17 +65,22 @@ function init() {
                     audio: false
                 },
                 // successCallback
-                function (localMediaStream) {
+                function(localMediaStream) {
                     try {
                         videoElement.srcObject = localMediaStream;
                     } catch (error) {
                         videoElement.src = window.URL.createObjectURL(localMediaStream);
                     }
                     webcamStream = localMediaStream;
-                    startCounter();
+                    setTimeout(() => {
+                        const canvasElement = document.querySelector("canvas");
+                        takePhoto(videoElement, canvasElement);
+                        setLayout(["canvas"]);
+                        submitImageFromCanvas(canvasElement);
+                    }, 3000);
                 },
                 // errorCallback
-                function (err) {
+                function(err) {
                     console.log("The following error occured: " + err);
                 }
             );
@@ -94,9 +89,8 @@ function init() {
         }
     }
 
-    const videoElement = document.querySelector('video');
-    bindCamera(videoElement);
-    // Do something
+    setLayout(["video"]);
+    bindCamera();
 }
 
 function onDocumentReady(fn) {

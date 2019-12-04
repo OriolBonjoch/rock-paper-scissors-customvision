@@ -143,6 +143,12 @@ body {
     max-width: 24vw
 }
 
+.console-screen>div.restart-button {
+    height: auto;
+    position: relative;
+    top: 30px;
+}
+
 
 /********** Actions And buttons **********/
 
@@ -219,10 +225,4 @@ body {
 
 .pick-result .loser {
     color: #cb0808;
-}
-
-.console-screen>div.restart-button {
-    height: auto;
-    position: relative;
-    top: 30px;
 }

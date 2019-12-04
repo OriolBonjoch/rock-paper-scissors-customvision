@@ -1,46 +1,20 @@
 function init() {
-    const startCounter = () => {
-        if (!webcamStream) {
-            return;
+    // Global variables
+    let webcamStream;
+    const appContainer = document.getElementById('appContainer');
+
+    const setLayout = (visibleElements) => {
+        const elements = ["video", "canvas"];
+
+        for (let i = 0; i < elements.length; i++) {
+            const el = appContainer.querySelector(elements[i]);
+            if (visibleElements.indexOf(elements[i]) == -1) {
+                el.classList.add('hide');
+            } else {
+                el.classList.remove('hide');
+            }
         }
-
-        let counter = 0;
-        const counterStart = 0;
-        const counterStop = 3;
-        const counterStep = 1;
-        const timerTick = 1000;
-
-        const videoElement = document.querySelector("video");
-        const canvasElement = document.querySelector("canvas");
-
-        let counterTimer;
-
-        // Reset elements
-        startButtonElement.classList.add('hide');
-        counterElement.classList.remove('hide');
-        userPickElement.classList.add('hide');
-        enginePickElement.parentElement.classList.add('hide');
-
-        const counterTimerTick = function counterTimerTick() {
-            if (counterTimer) {
-                clearTimeout(counterTimer);
-            }
-            counter += counterStep;
-            counterTextElement.innerHTML = counter;
-            if (counter >= counterStop) {
-                takePhoto(videoElement, canvasElement);
-                canvasElement.classList.remove('hide');
-                videoElement.classList.add('hide');
-                return;
-            }
-
-            counterTimer = setTimeout(counterTimerTick, timerTick);
-        };
-
-        counter = counterStart;
-        counterTimerTick();
-    };
-
+    }
 
     const takePhoto = (videoElement, canvasElement) => {
         const canvasContext = canvasElement.getContext('2d');
@@ -53,6 +27,7 @@ function init() {
     // Initialize camera
     function bindCamera() {
         const videoElement = document.querySelector('video');
+
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -75,7 +50,11 @@ function init() {
                         videoElement.src = window.URL.createObjectURL(localMediaStream);
                     }
                     webcamStream = localMediaStream;
-                    startCounter();
+                    setTimeout(() => {
+                        const canvasElement = document.querySelector("canvas");
+                        takePhoto(videoElement, canvasElement);
+                        setLayout(["canvas"]);
+                    }, 3000);
                 },
                 // errorCallback
                 function(err) {
@@ -87,8 +66,8 @@ function init() {
         }
     }
 
+    setLayout(["video"]);
     bindCamera();
-    // Do something
 }
 
 function onDocumentReady(fn) {

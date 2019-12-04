@@ -1,91 +1,94 @@
 function init() {
     // Global variables
     let webcamStream;
-    const appResults = document.getElementById('appResults');
-    const videoElement = document.querySelector('video');
-    const appRestartButton = document.getElementById('appRestartButton');
-    
-    const picks = ["rock", "paper", "scissors"];
-    const getEnginePick = () => {
-        return picks[Math.floor(Math.random() * picks.length)];
+    const appContainer = document.getElementById('appContainer');
+    const restartButtonElement = document.querySelector('.restart-button');
+    const startButtonElement = appContainer.querySelector('.start-button');
+    const picks = ["rock", "paper", "scissors", "lizard", "spock"];
+
+    const getEnginePick = () => picks[Math.floor(Math.random() * picks.length)];
+
+    const setLayout = (visibleElements) => {
+        const elements = [
+            "video", "canvas", ".user-pick",
+            ".bot-player", ".bot-pick",
+            ".start-button", ".app-counter", ".restart-button"
+        ];
+
+        for (let i = 0; i < elements.length; i++) {
+            const el = appContainer.querySelector(elements[i]);
+            if (visibleElements.indexOf(elements[i]) == -1) {
+                el.classList.add('hide');
+            } else {
+                el.classList.remove('hide');
+            }
+        }
     };
 
-    let counter = 0;
-    const counterStart = 0;
-    const counterStop = 4;
-    const counterStep = 1;
-    const timerTick = 1000;
-    const startCounter = () => {
-        let counterTimer;
+    const startBattle = () => {
+        if (!webcamStream) return;
+
         const videoElement = document.querySelector("video");
         const canvasElement = document.querySelector("canvas");
-        // Clear elements styles
-        canvasElement.classList.add('hide');
-        appRestartButton.classList.add('hide');
-        const enginePickElement = document.querySelector('.appEnginePick');
-        picks.forEach(pickLabel => {
-            enginePickElement.classList.remove(pickLabel);
-        });
+        const timerTick = 3000;
+
+        setLayout(["video", ".app-counter", ".bot-player"]);
 
         const counterTimerTick = function counterTimerTick() {
-            if (counterTimer) {
-                clearTimeout(counterTimer);
-            }
-            counter += counterStep;
-            if (counter >= counterStop) {
-                takePhoto(videoElement, canvasElement);
-                return;
-            }
-            counterTimer = setTimeout(counterTimerTick, timerTick);
+            takePhoto(videoElement, canvasElement);
+            setLayout(["canvas", ".app-counter", ".bot-player"]);
+            submitImageFromCanvas(canvasElement);
         };
-    
-        counter = counterStart;
-        counterTimerTick();
+
+        setTimeout(counterTimerTick, timerTick);
     };
 
-    const processPrediction = (prediciton, enginePick) => {
-        appResults.querySelector(".appUserAnswer").innerHTML = prediciton;
-        appResults.querySelector(".appEngineAnswer").innerHTML = enginePick;
-        document.querySelector('.appEnginePick').classList.add(enginePick);
-        appRestartButton.classList.remove('hide');    
+    const processPrediction = (prediction, enginePick) => {
+        const userPickElement = appContainer.querySelector('.user-pick');
+        const enginePickElement = appContainer.querySelector('.bot-pick-img');
+
+        userPickElement.src = 'img/user/' + prediction + '.png';
+        enginePickElement.src = 'img/bot/' + enginePick + '.png';
+
+        setLayout(["canvas", ".user-pick", ".app-counter", ".bot-pick", ".restart-button"]);
     };
 
     const submitImageFromCanvas = (canvasElement) => {
         const request = new XMLHttpRequest();
         request.open('POST', "/predict", true);
         request.setRequestHeader('Content-Type', 'application/octet-stream');
-        request.onload = function () {
+        request.onload = function() {
             if (request.status >= 200 && request.status < 400) {
                 // Success!
-                const prediction = JSON.parse(request.responseText).prediction;
+                const prediction = JSON.parse(request.responseText).prediction.toLowerCase();
                 const enginePick = getEnginePick();
                 processPrediction(prediction, enginePick);
             } else {
                 console.error(request);
             }
         };
-    
-        request.onerror = function (error) {
+
+        request.onerror = function(error) {
             console.error(error);
         };
-    
+
         canvasElement.toBlob(function(blob) {
             request.send(blob);
         });
     };
 
     const takePhoto = (videoElement, canvasElement) => {
-        canvasElement.classList.remove('hide');
         const canvasContext = canvasElement.getContext('2d');
         const videoSettings = webcamStream.getVideoTracks()[0].getSettings();
         canvasContext.drawImage(videoElement,
             0, 0, videoSettings.width, videoSettings.height,
             0, 0, canvasElement.width, canvasElement.height);
-        submitImageFromCanvas(canvasElement);
     };
 
     // Initialize camera
-    function bindCamera(videoElement) {
+    function bindCamera() {
+        const videoElement = document.querySelector('video');
+
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -101,17 +104,16 @@ function init() {
                     audio: false
                 },
                 // successCallback
-                function (localMediaStream) {
+                function(localMediaStream) {
                     try {
                         videoElement.srcObject = localMediaStream;
                     } catch (error) {
                         videoElement.src = window.URL.createObjectURL(localMediaStream);
                     }
                     webcamStream = localMediaStream;
-                    startCounter();
                 },
                 // errorCallback
-                function (err) {
+                function(err) {
                     console.log("The following error occured: " + err);
                 }
             );
@@ -120,10 +122,11 @@ function init() {
         }
     }
 
-    bindCamera(videoElement);
-    appRestartButton.addEventListener("click", function(){
-        startCounter();
-    });
+    const startLayout = () => setLayout(["video", ".start-button", ".bot-player"]);
+    startLayout();
+    bindCamera();
+    startButtonElement.addEventListener("click", startBattle);
+    restartButtonElement.addEventListener("click", startLayout);
 }
 
 function onDocumentReady(fn) {

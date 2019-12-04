@@ -3,15 +3,7 @@ function init() {
     let webcamStream;
     const appContainer = document.getElementById('appContainer');
     const restartButtonElement = document.querySelector('.restart-button');
-    const counterElement = appContainer.querySelector('.app-counter');
     const startButtonElement = appContainer.querySelector('.start-button');
-
-    const userPickElement = appContainer.querySelector('.user-pick');
-    const enginePickElement = appContainer.querySelector('.bot-pick > img');
-    const enginePlayerElement = appContainer.querySelector('.bot-player');
-    const resultsElement = appContainer.querySelector('.pick-result');
-    const counterTextElement = counterElement.querySelector('.app-counter-text');
-
     const picks = ["rock", "paper", "scissors", "lizard", "spock"];
     const resultText = {
         "winner": "you win!!",
@@ -42,12 +34,28 @@ function init() {
         return "loser";
     };
 
-    const startCounter = () => {
-        if (!webcamStream) {
-            return;
+    const setLayout = (visibleElements) => {
+        const elements = [
+            "video", "canvas", ".upload-photo-container", ".user-pick", ".pick-result",
+            ".bot-player", ".bot-pick",
+            ".start-button", ".app-counter", ".restart-button"
+        ];
+
+        for (let i = 0; i < elements.length; i++) {
+            const el = appContainer.querySelector(elements[i]);
+            if (visibleElements.indexOf(elements[i]) == -1) {
+                el.classList.add('hide');
+            } else {
+                el.classList.remove('hide');
+            }
         }
+    }
+
+    const startBattle = () => {
+        if (!webcamStream) return;
 
         let counter = 0;
+        const counterTextElement = appContainer.querySelector('.app-counter-text');
         const counterStart = 0;
         const counterStop = 3;
         const counterStep = 1;
@@ -57,27 +65,24 @@ function init() {
         const canvasElement = document.querySelector("canvas");
 
         let counterTimer;
-
-        // Reset elements
-        startButtonElement.classList.add('hide');
-        counterElement.classList.remove('hide');
-        userPickElement.classList.add('hide');
-        enginePickElement.parentElement.classList.add('hide');
+        // set counter layout
+        setLayout(["video", ".app-counter", ".bot-player"]);
 
         const counterTimerTick = function counterTimerTick() {
             if (counterTimer) {
                 clearTimeout(counterTimer);
             }
             counter += counterStep;
-            counterTextElement.innerHTML = counter;
-            if (counter >= counterStop) {
-                takePhoto(videoElement, canvasElement);
-                canvasElement.classList.remove('hide');
-                videoElement.classList.add('hide');
+            if (counter < counterStop) {
+                counterTextElement.innerHTML = counter;
+                counterTimer = setTimeout(counterTimerTick, timerTick);
                 return;
             }
 
-            counterTimer = setTimeout(counterTimerTick, timerTick);
+            counterTextElement.innerHTML = 'VS';
+            takePhoto(videoElement, canvasElement);
+            setLayout(["canvas", ".app-counter", ".bot-player"]);
+            submitImageFromCanvas(canvasElement);
         };
 
         counter = counterStart;
@@ -85,7 +90,10 @@ function init() {
     };
 
     const processPrediction = (prediction, enginePick) => {
-        counterTextElement.innerHTML = 'VS';
+        const userPickElement = appContainer.querySelector('.user-pick');
+        const enginePickElement = appContainer.querySelector('.bot-pick-img');
+        const resultsElement = appContainer.querySelector('.pick-result');
+
         userPickElement.src = 'img/user/' + prediction + '.png';
         enginePickElement.src = 'img/bot/' + enginePick + '.png';
 
@@ -94,12 +102,7 @@ function init() {
         const resultTextElement = resultsElement.firstElementChild;
         resultTextElement.className = result;
         resultTextElement.innerText = resultText[result];
-
-        userPickElement.classList.remove('hide');
-        enginePickElement.parentElement.classList.remove('hide');
-        enginePlayerElement.classList.add('hide');
-        resultsElement.classList.remove('hide');
-        restartButtonElement.classList.remove('hide');
+        setLayout(["canvas", ".user-pick", ".pick-result", ".app-counter", ".bot-pick", ".restart-button"]);
     };
 
     const submitImageFromCanvas = (canvasElement) => {
@@ -132,12 +135,12 @@ function init() {
         canvasContext.drawImage(videoElement,
             0, 0, videoSettings.width, videoSettings.height,
             0, 0, canvasElement.width, canvasElement.height);
-        submitImageFromCanvas(canvasElement);
     };
 
     // Initialize camera
     function bindCamera() {
         const videoElement = document.querySelector('video');
+
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -145,7 +148,7 @@ function init() {
             navigator.msGetUserMedia);
 
         // Check that getUserMedia is supported
-        if (!navigator.getUserMedia) {
+        if (navigator.getUserMedia) {
             navigator.getUserMedia(
                 // constraints
                 {
@@ -168,14 +171,12 @@ function init() {
             );
         } else {
             console.log("getUserMedia not supported");
-            appContainer.querySelector("video").classList.add('hide');
-            appContainer.querySelector(".upload-photo-container").classList.remove('hide');
+            setLayout([".upload-photo-container", ".app-counter", ".bot-player"]);
+
             const canvasElement = document.querySelector("canvas");
             const canvasContext = canvasElement.getContext('2d');
             const image = new Image();
             image.onload = () => {
-                appContainer.querySelector(".upload-photo-container").classList.add('hide');
-                canvasElement.classList.remove('hide');
                 canvasContext.drawImage(image,
                     0, 0, image.width, image.height,
                     0, 0, canvasElement.width, canvasElement.height);
@@ -189,8 +190,11 @@ function init() {
         }
     }
 
+    const startLayout = () => setLayout(["video", ".start-button", ".bot-player"]);
+    startLayout();
     bindCamera();
-    startButtonElement.addEventListener("click", startCounter);
+    startButtonElement.addEventListener("click", startBattle);
+    restartButtonElement.addEventListener("click", startLayout);
 }
 
 function onDocumentReady(fn) {

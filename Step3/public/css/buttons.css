@@ -17,7 +17,7 @@
     color: #fff;
 }
 
-.restart-button>a {
+.restart-button>span {
     font-size: 1.25rem;
     cursor: pointer;
     padding: 1rem 3rem;
@@ -45,13 +45,13 @@
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.restart-button:hover a,
+.restart-button:hover span,
 .restart-button:hover button {
     background-color: #ec6a9c;
     text-shadow: 0 -1px 1px rgba(175, 49, 95, 0.9), 0 0 5px rgba(255, 255, 255, 0.8);
 }
 
-.restart-button:active a,
+.restart-button:active span,
 .restart-button:active button {
     -webkit-transform: translate(0, 4px);
     -moz-transform: translate(0, 4px);
