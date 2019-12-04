@@ -34,16 +34,24 @@ function init() {
         return "loser";
     };
 
-    const setLayout = (visibleElements) => {
+    const setLayout = (phase) => {
         const elements = [
             "video", "canvas", ".upload-photo-container", ".user-pick", ".pick-result",
             ".bot-player", ".bot-pick",
             ".start-button", ".app-counter", ".restart-button"
         ];
 
+        const visibleElements = {
+            "start": ["video", ".start-button", ".bot-player"],
+            "countdown": ["video", ".app-counter", ".bot-player"],
+            "predicting": ["canvas", ".app-counter", ".bot-player"],
+            "results": ["canvas", ".user-pick", ".pick-result", ".app-counter", ".bot-pick", ".restart-button"],
+            "uploadfile": [".upload-photo-container", ".app-counter", ".bot-player"]
+        };
+
         for (let i = 0; i < elements.length; i++) {
             const el = appContainer.querySelector(elements[i]);
-            if (visibleElements.indexOf(elements[i]) == -1) {
+            if (visibleElements[phase].indexOf(elements[i]) == -1) {
                 el.classList.add('hide');
             } else {
                 el.classList.remove('hide');
@@ -66,7 +74,7 @@ function init() {
 
         let counterTimer;
         // set counter layout
-        setLayout(["video", ".app-counter", ".bot-player"]);
+        setLayout("countdown");
 
         const counterTimerTick = function counterTimerTick() {
             if (counterTimer) {
@@ -79,10 +87,10 @@ function init() {
                 return;
             }
 
-            counterTextElement.innerHTML = 'VS';
             takePhoto(videoElement, canvasElement);
-            setLayout(["canvas", ".app-counter", ".bot-player"]);
+            setLayout("predicting");
             submitImageFromCanvas(canvasElement);
+            counterTextElement.innerHTML = 'VS';
         };
 
         counter = counterStart;
@@ -102,7 +110,7 @@ function init() {
         const resultTextElement = resultsElement.firstElementChild;
         resultTextElement.className = result;
         resultTextElement.innerText = resultText[result];
-        setLayout(["canvas", ".user-pick", ".pick-result", ".app-counter", ".bot-pick", ".restart-button"]);
+        setLayout("results");
     };
 
     const submitImageFromCanvas = (canvasElement) => {
@@ -171,7 +179,7 @@ function init() {
             );
         } else {
             console.log("getUserMedia not supported");
-            setLayout([".upload-photo-container", ".app-counter", ".bot-player"]);
+            setLayout("uploadfile");
 
             const canvasElement = document.querySelector("canvas");
             const canvasContext = canvasElement.getContext('2d');
@@ -190,11 +198,10 @@ function init() {
         }
     }
 
-    const startLayout = () => setLayout(["video", ".start-button", ".bot-player"]);
-    startLayout();
+    setLayout("start")
     bindCamera();
     startButtonElement.addEventListener("click", startBattle);
-    restartButtonElement.addEventListener("click", startLayout);
+    restartButtonElement.addEventListener("click", () => setLayout("start"));
 }
 
 function onDocumentReady(fn) {

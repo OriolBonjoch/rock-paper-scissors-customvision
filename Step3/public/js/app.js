@@ -3,12 +3,16 @@ function init() {
     let webcamStream;
     const appContainer = document.getElementById('appContainer');
 
-    const setLayout = (visibleElements) => {
+    const setLayout = (phase) => {
         const elements = ["video", "canvas"];
+        const visibleElements = {
+            "start": ["video"],
+            "predicting": ["canvas"],
+        };
 
         for (let i = 0; i < elements.length; i++) {
             const el = appContainer.querySelector(elements[i]);
-            if (visibleElements.indexOf(elements[i]) == -1) {
+            if (visibleElements[phase].indexOf(elements[i]) == -1) {
                 el.classList.add('hide');
             } else {
                 el.classList.remove('hide');
@@ -75,7 +79,7 @@ function init() {
                     setTimeout(() => {
                         const canvasElement = document.querySelector("canvas");
                         takePhoto(videoElement, canvasElement);
-                        setLayout(["canvas"]);
+                        setLayout("predicting");
                         submitImageFromCanvas(canvasElement);
                     }, 3000);
                 },
@@ -89,7 +93,7 @@ function init() {
         }
     }
 
-    setLayout(["video"]);
+    setLayout("start");
     bindCamera();
 }
 

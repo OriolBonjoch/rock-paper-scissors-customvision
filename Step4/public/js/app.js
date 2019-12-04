@@ -5,21 +5,28 @@ function init() {
     const restartButtonElement = document.querySelector('.restart-button');
     const startButtonElement = appContainer.querySelector('.start-button');
 
-    const setLayout = (visibleElements) => {
+    const setLayout = (phase) => {
         const elements = [
             "video", "canvas", ".user-pick",
             ".start-button", ".app-counter", ".restart-button"
         ];
 
+        const visibleElements = {
+            "start": ["video", ".start-button"],
+            "countdown": ["video", ".app-counter"],
+            "predicting": ["canvas", ".app-counter"],
+            "results": ["canvas", ".user-pick", ".app-counter", ".restart-button"]
+        };
+
         for (let i = 0; i < elements.length; i++) {
             const el = appContainer.querySelector(elements[i]);
-            if (visibleElements.indexOf(elements[i]) == -1) {
+            if (visibleElements[phase].indexOf(elements[i]) == -1) {
                 el.classList.add('hide');
             } else {
                 el.classList.remove('hide');
             }
         }
-    };
+    }
 
     const startBattle = () => {
         if (!webcamStream) return;
@@ -28,11 +35,11 @@ function init() {
         const canvasElement = document.querySelector("canvas");
         const timerTick = 3000;
 
-        setLayout(["video", ".app-counter", ".bot-player"]);
+        setLayout("countdown");
 
         const counterTimerTick = function counterTimerTick() {
             takePhoto(videoElement, canvasElement);
-            setLayout(["canvas", ".app-counter", ".bot-player"]);
+            setLayout("predicting");
             submitImageFromCanvas(canvasElement);
         };
 
@@ -43,7 +50,7 @@ function init() {
         const userPickElement = appContainer.querySelector('.user-pick');
         userPickElement.src = 'img/user/' + prediction + '.png';
 
-        setLayout(["canvas", ".user-pick", ".app-counter", ".restart-button"]);
+        setLayout("results");
     };
 
     const submitImageFromCanvas = (canvasElement) => {
@@ -114,11 +121,10 @@ function init() {
         }
     }
 
-    const startLayout = () => setLayout(["video", ".start-button"]);
-    startLayout();
+    setLayout("start")
     bindCamera();
     startButtonElement.addEventListener("click", startBattle);
-    restartButtonElement.addEventListener("click", startLayout);
+    restartButtonElement.addEventListener("click", () => setLayout("start"));
 }
 
 function onDocumentReady(fn) {
