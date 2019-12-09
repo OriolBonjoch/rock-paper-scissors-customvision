@@ -33,100 +33,13 @@ Outline the file contents of the repository. It helps users navigate the codebas
 
 ## Azure Subscription
 
-### Open Azure Portal - https://portal.azure.com
-### Create a new resource group
-* Open "Resource groups" module and add new resource group
+An ARM template is provided so you can create the whole infrastructure required for this training (an Azure application service and )
 
-  ![Add new resource group](assets/screenshots/0_resource_group_blank.JPG "Add new resource group")
-  
-* Fill-in the form (Subscription - <your_subscription>, Resource group - "RPS_ResourceGroup", Region - "West Europe")
-
-  ![Fill-in the form](assets/screenshots/0_resource_group_new.JPG "Fill-in the form")
-
-* Click "Review + create"
-* Verify the values and click create
-
-  ![Verify the values and click create](assets/screenshots/0_resource_group_new_valid.JPG "Verify the values and click create")
-
-* Wait until resource group is create and click "Go to resource group"
-
-  ![Wait until resource group is create and click "Go to resource group"](assets/screenshots/0_resource_group_goto.JPG "Wait until resource group is create and click Go to resource group")
-
-### Create a new Custom Vision resource
-* Create new resource
-
-  ![Create new resource](assets/screenshots/0_resource_group_list_res_blank.JPG "Create new resource")
-
-* Search for "Custom Vision" in the Marketplace and click on it
-
-  ![Search for "Custom Vision" in the Marketplace and click on it](assets/screenshots/0_resource_search.JPG "Search for Custom Vision in the Marketplace and click on it")
-
-* Click Create
-
-  ![Click Create](assets/screenshots/0_resource_customvision_new.JPG "Click Create")
-
-* Fill-in the form (Name - "RPSCustomVision", Subscription - <your_subscription>, Resource group - "RPS_ResourceGroup", Location - "West Europe", Pricing tiers for training and predition - "F0") and click create. Wait until resource is created
-
-  ![Fill-in the form and click create](assets/screenshots/0_resource_customvision_settings.JPG "Fill-in the form and click create")
-
-### Create a new AppService resource
-* Open your resource group and verify that you now have two resources with "Cognitive Service" type and click "Add" to add another resource
-
-  ![Open your resource group and verify that you now have two resources with "Cognitive Service" type and click "Add" to add another resource](assets/screenshots/0_resource_group_list_cv.JPG "Open your resource group and verify that you now have two resources with Cognitive Service type and click Add to add another resource")
-
-* Search for "Web App" in the Marketplace and click on it
-
-  ![Search for "Web App" in the Marketplace and click on it](assets/screenshots/0_resource_search_webapp.JPG "Search for Web App in the Marketplace and click on it")
-
-* Click Create
-
-  ![Click Create](assets/screenshots/0_resource_search_webapp.JPG "Click Create")
-
-* Fill-in the form (Subscription - <your_subscription>, Resource group name - "RPS_ResourceGroup", Name - <choose_unique_name>, Publish - "Code", "Runtime stack" - "Node 10.14", Operating system - "Windows", Region - "West Europe") and click "Change size" for App Service Plan
-
-  ![Fill-in the form and and click "Change size" for App Service Plan](assets/screenshots/0_resource_webapp_settings_1.JPG "Fill-in the form and and click Change size for App Service Plan")
-
-* Select "Dev / Test" plan and "F1" pricing tier, then click "Apply"
-
-  ![Select "Dev / Test" plan and "F1" pricing tier, then click "Apply"](assets/screenshots/0_resource_webapp_settings_2.JPG "Select Dev/Test plan and F1 pricing tier, then click Apply")
-
-* Click "Review and create"
-
-  ![Click "Review and create"](assets/screenshots/0_resource_webapp_settings_3.JPG "Click Review and create")
-
-* Verify values and click "Create"
-
-  ![Verify values and click "Create"](assets/screenshots/0_resource_webapp_valid.JPG "Verify values and click Create")
-
-* Wait for Web App deployment
-
-  ![Wait for Web App deployment](assets/screenshots/0_resource_webapp_deployment_wait.JPG "Wait for Web App deployment")
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOriolBonjoch%2Frock-paper-scissors-customvision%2Fmaster%2Fdeployment.json"><img src="/assets/deploy-to-azure.png" alt="Deploy to Azure"/></a>
 
 * Open your resource group and verify that you have the following resources: App Service Plan, App Service and two Cognitive Services
 
   ![Open your resource group and verify that you have the following resources: App Service Plan, App Service and two Cognitive Services](assets/screenshots/0_resource_group_list_final.JPG)
-
-* Open your new Web App, go to "Configuration" -> "Application Settings" 
-
-  ![Open your new Web App, go to Configuration -> Application Settings](assets/screenshots/0_resource_webapp_settings.png)
-
-* Click "New application setting"
-
-  ![Click New application setting](assets/screenshots/0_resource_webapp_settings_new.png)
-  
-* Setting name is "SCM_DO_BUILD_DURING_DEPLOYMENT" and value "true"
-
-  ![Setting name is SCM_DO_BUILD_DURING_DEPLOYMENT and value true](assets/screenshots/0_resource_webapp_settings_new_form.png)
-
-* Click "OK"
-
-  ![Click OK](assets/screenshots/0_resource_webapp_settings_new_form_ok.png)
-
-* Click "Save"
-
-  ![Click Save](assets/screenshots/0_resource_webapp_settings_updated_save.png)
-
-* This will enable build step when we deploy our NodeJS application later
 
 ## Custom Vision
 
