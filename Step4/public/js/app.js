@@ -46,7 +46,7 @@ function init() {
         setTimeout(counterTimerTick, timerTick);
     };
 
-    const processPrediction = (prediction) => {
+    const showResults = (prediction) => {
         const userPickElement = appContainer.querySelector('.user-pick');
         userPickElement.src = 'img/user/' + prediction + '.png';
 
@@ -61,7 +61,7 @@ function init() {
             if (request.status >= 200 && request.status < 400) {
                 // Success!
                 const prediction = JSON.parse(request.responseText).prediction.toLowerCase();
-                processPrediction(prediction);
+                showResults(prediction);
             } else {
                 console.error(request);
             }

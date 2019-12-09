@@ -50,7 +50,7 @@ function init() {
         setTimeout(counterTimerTick, timerTick);
     };
 
-    const processPrediction = (prediction, enginePick) => {
+    const showResults = (prediction, enginePick) => {
         const userPickElement = appContainer.querySelector('.user-pick');
         const enginePickElement = appContainer.querySelector('.bot-pick-img');
 
@@ -69,7 +69,7 @@ function init() {
                 // Success!
                 const prediction = JSON.parse(request.responseText).prediction.toLowerCase();
                 const enginePick = getEnginePick();
-                processPrediction(prediction, enginePick);
+                showResults(prediction, enginePick);
             } else {
                 console.error(request);
             }

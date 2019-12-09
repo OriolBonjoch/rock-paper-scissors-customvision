@@ -6,14 +6,13 @@ Goal:
 ## Changes in index.js
 ```javascript
     const customVisionPostRequest = https.request(customVisionPostOptions, (predictionResponse) => {
-        predictionResponse.on('data', function (data) {
+        predictionResponse.on('data', function(data) {
             const customVisionResponse = JSON.parse(data);
             const predictions = customVisionResponse.predictions;
             console.log(predictions);
             const mostLikelyPrediction = predictions.sort((a, b) => {
                 return (a.probability > b.probability) ? -1 :
-                    (a.probability === b.probability ? 0 : 1)
-                ;
+                    (a.probability === b.probability ? 0 : 1);
             })[0].tagName;
             response.setHeader('Content-Type', 'text/json');
             response.end(`{ "prediction": "${mostLikelyPrediction}" }`);
@@ -22,115 +21,159 @@ Goal:
 ```
 
 ## Changes in public/index.html
+
+Complete the first console screen with user's pick and add opponent's console
 ```HTML
-    <div class="appPanel">
-      <div class="appResults" id="appResults">
-        <div class="answer"><span>User:&nbsp;</span><span class="appUserAnswer value">-</span></div>
-      </div>
-      <div class="appRestart"><button id="appRestartButton" class="appRestartButton hide">NEW GAME</button></div>
+<div class="console-screen">
+    <p class="console-text">User</p>
+    <div class="cam-recorder-container">
+        <video width="800" height="600" autoplay=""></video>
+        <canvas width="800" height="600"></canvas>
+        <img class="user-pick" src="img/user/rock.png" alt="user pick" />
     </div>
+</div>
+<div class="app-action">
+    <div class="start-button">
+        <p>start</p>
+        <p>battle</p>
+    </div>
+    <div class="app-counter">
+        <p class="app-counter-text">VS</p>
+    </div>
+</div>
+<div class="console-screen">
+    <p class="console-text">engine</p>
+    <div class="opponent-container">
+        <img class="bot-player" src="img/bot.png" alt="engine player">
+    </div>
+    <div class="restart-button">
+        <span>play again</span>
+    </div>
+</div>
 ```
 
 ## changes in public/css/app.css
+
+To add at the end
 ```CSS
-/** Results panel **/
-.appContainer .appPanel {
+.console-screen>div.restart-button {
+    height: auto;
     position: relative;
-    height: 20%;
-    width: 100%;
-    font-size: 1.3em;
-    box-sizing: border-box;
-    background: #3c3c3c;
-    color: #cccccc;
+    top: 30px;
+}
+
+
+/********** Actions And buttons **********/
+
+.app-action {
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: stretch;
+    flex: 2;
+    justify-content: center;
+    align-items: center;
 }
 
-.appPanel .appResults {
-    flex: 1 0 0;
+.app-counter {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    width: 10vw;
+    height: 10vw;
+    border-radius: 50%;
+    box-shadow: inset 0px 0px 0px 10px #231547;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    font-family: "Voyager";
+    font-size: 3.5rem;
+    color: #956dea;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.9);
 }
 
-.appResults .answer {
-    flex: 0;
-    padding: 0.5em;
-    text-transform: uppercase;
+
+/********** Bot console **********/
+
+.opponent-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.appResults .answer .value {
-    font-weight: bold;
-}
-
-.appPanel .appRestart {
-    flex: 1 0 0;
-    align-self: center;
-}
-
-.appPanel .appRestartButton {
-    padding: 0.25em 0.5em;
-    font-size: 1em;
-    border-radius: 1em;
-}
-
-.hide {
-    visibility: hidden;
+.opponent-container>img {
+    height: 100%;
+    width: auto;
 }
 ```
-### for .appContainer .appUserInput 
-change `height: 80%;`
 
 ## Changes in public/js/app.js
-### reorder + optimise a bit
+
+At the beginning add global variables
 ```javascript
 // Global variables
-let webcamStream;
-const appResults = document.getElementById('appResults');
-const videoElement = document.querySelector('video');
-const appRestartButton = document.getElementById('appRestartButton');
+const restartButtonElement = document.querySelector('.restart-button');
+const startButtonElement = appContainer.querySelector('.start-button');
+```
 
-let counter = 0;
-const counterStart = 0;
-const counterStop = 4;
-const counterStep = 1;
-const timerTick = 1000;
-```
-### in submitImageFromCanvas()
+Update setLayout elements arrays
 ```javascript
-    ...
-    // Success!
-    const prediction = JSON.parse(request.responseText).prediction;
-    processPrediction(prediction);
-    ...
+const elements = [
+    "video", "canvas", ".user-pick",
+    ".start-button", ".app-counter", ".restart-button"
+];
+
+const visibleElements = {
+    "start": ["video", ".start-button"],
+    "countdown": ["video", ".app-counter"],
+    "predicting": ["canvas", ".app-counter"],
+    "results": ["canvas", ".user-pick", ".app-counter", ".restart-button"]
+};
 ```
-### Add new method
+
+Add new methods
 ```javascript
-    const processPrediction = (prediciton) => {
-        appResults.querySelector(".appUserAnswer").innerHTML = prediciton;
-        appRestartButton.classList.remove('hide');
+const startBattle = () => {
+    if (!webcamStream) return;
+
+    const videoElement = document.querySelector("video");
+    const canvasElement = document.querySelector("canvas");
+    const timerTick = 3000;
+
+    setLayout("countdown");
+
+    const counterTimerTick = function counterTimerTick() {
+        takePhoto(videoElement, canvasElement);
+        setLayout("predicting");
+        submitImageFromCanvas(canvasElement);
     };
+
+    setTimeout(counterTimerTick, timerTick);
+};
+
+const showResults = (prediction) => {
+    const userPickElement = appContainer.querySelector('.user-pick');
+    userPickElement.src = 'img/user/' + prediction + '.png';
+
+    setLayout("results");
+};
 ```
-### in startCounter()
+
+Inside submitImageFromCanvas from a success prediction
 ```javascript
-    ...
-    canvasElement.classList.add('hide');
-    appRestartButton.classList.add('hide');
+    // Success!
+    const prediction = JSON.parse(request.responseText).prediction.toLowerCase();
+    showResults(prediction);
 ```
-### in const takePhoto = (videoElement, canvasElement) => {
+
+Instead of taking a picture after 3 seconds it will be triggered by pressing the start battle button, we need to remove the 3 seconds trigger at bindCamera function
 ```javascript
-    ...
-    canvasElement.classList.remove('hide');
+// TO REMOVE:
+setTimeout(() => {
+    const canvasElement = document.querySelector("canvas");
+    takePhoto(videoElement, canvasElement);
+    setLayout("predicting");
+    submitImageFromCanvas(canvasElement);
+}, 3000);
 ```
-### After bindCamera(videoElement); call
+After bindCamera(); call
 ```javascript
-    ...
-    bindCamera(videoElement);
-    appRestartButton.addEventListener("click", function(){
-        startCounter();
-    });
+    bindCamera();
+    startButtonElement.addEventListener("click", startBattle);
+    restartButtonElement.addEventListener("click", () => setLayout("start"));
 ```

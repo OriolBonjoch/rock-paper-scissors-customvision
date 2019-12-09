@@ -6,76 +6,138 @@ Goal:
 
 ## index.html changes
 ```HTML
-<div class="appUserInput">
-    <video id="video" autoplay></video>
-    <div class="appCanvasContainer">
-        <canvas class="appCanvas" id="myCanvas"></canvas>
+<div id="appContainer" class="app-content">
+    <div class="console-controls"><img src="img/controls_left.svg" alt="left panel console" /></div>
+    <div class="console-screen">
+        <p class="console-text">User</p>
+        <div class="cam-recorder-container">
+            <video width="800" height="600" autoplay=""></video>
+            <canvas width="800" height="600"></canvas>
+        </div>
     </div>
+    <div class="console-controls"><img src="img/controls_right.svg" alt="right panel console" /></div>
 </div>
 ```
+
 ## app.css changes
 ```CSS
-/** Video + canvas **/
+/********** Layout **********/
 
-.appContainer .appUserInput {
-    position: relative;
-    height: 100%;
+.app {
+    background-size: 100%;
+    flex-direction: column;
+    display: flex;
     width: 100%;
-    overflow: hidden;
+    background-image: url(../img/screens_panel.svg), url(../img/platform_opponents.svg);
+    background-repeat: no-repeat;
+    background-position-y: 4vh, top;
 }
 
-.appContainer video {
-    position: relative;
+.app-content {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10vh;
     width: 100%;
-    height: 100%;
-    object-fit: fill;
+    justify-content: space-around;
 }
 
-.appUserInput .appCanvasContainer {
+.console-controls {
+    padding-top: 2vw;
+    height: 27.4vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 2;
+}
+
+.console-controls>img {
+    max-height: 100%;
+}
+
+
+/********** Consoles layout **********/
+
+.console-screen {
+    height: 25vw;
+    flex: 4;
+    margin: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    background-image: url(../img/console_background.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center top;
+}
+
+.console-screen>div {
+    height: 20vw;
+}
+
+.console-text {
+    font-family: Voyager;
+    color: #ffffff;
+    display: flex;
+    height: 1.8vw;
+    font-size: 1rem;
+    margin: 5px auto;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.9);
+    box-shadow: 0px -8px 12px -1px rgba(72, 52, 133, 0.56);
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+/********** User console **********/
+
+.cam-recorder-container {
+    position: relative;
+    margin: 25px 40px;
+    border-radius: 10px;
+}
+
+.cam-recorder-container img {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
+    width: 5vw;
+    top: 1.7vw;
+    right: 1vw;
+    opacity: 1;
+    background: #53398d;
+    border-radius: 100px;
 }
 
-.appContainer .appCanvasContainer .appCanvas {
-    margin: 0 auto;
+.console-screen video,
+.console-screen canvas {
+    height: auto;
     width: 100%;
-    height: 100%;
+    max-width: 24vw
 }
 ```
 
 ## app.js changes, inside init() method
 ``` javascript
+
     // Global variables
     let webcamStream;
-    let counter = 0;
-    const counterStart = 0;
-    const counterStop = 4;
-    const counterStep = 1;
-    const timerTick = 1000;
-    const startCounter = () => {
-        let counterTimer;
-        const videoElement = document.querySelector("video");
-        const canvasElement = document.querySelector("canvas");
+    const appContainer = document.getElementById('appContainer');
 
-        const counterTimerTick = function counterTimerTick() {
-            if (counterTimer) {
-                clearTimeout(counterTimer);
-            }
-            counter += counterStep;
-            if (counter >= counterStop) {
-                takePhoto(videoElement, canvasElement);
-                return;
-            }
-            counterTimer = setTimeout(counterTimerTick, timerTick);
+    const setLayout = (phase) => {
+        const elements = ["video", "canvas"];
+        const visibleElements = {
+            "start": ["video"],
+            "predicting": ["canvas"],
         };
-    
-        counter = counterStart;
-        counterTimerTick();
-    };
+
+        for (let i = 0; i < elements.length; i++) {
+            const el = appContainer.querySelector(elements[i]);
+            if (visibleElements[phase].indexOf(elements[i]) == -1) {
+                el.classList.add('hide');
+            } else {
+                el.classList.remove('hide');
+            }
+        }
+    }
 
     const takePhoto = (videoElement, canvasElement) => {
         const canvasContext = canvasElement.getContext('2d');
@@ -86,7 +148,9 @@ Goal:
     };
 
     // Initialize camera
-    function bindCamera(videoElement) {
+    function bindCamera() {
+        const videoElement = document.querySelector('video');
+
         // getMedia polyfill
         navigator.getUserMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -102,17 +166,21 @@ Goal:
                     audio: false
                 },
                 // successCallback
-                function (localMediaStream) {
+                function(localMediaStream) {
                     try {
                         videoElement.srcObject = localMediaStream;
                     } catch (error) {
                         videoElement.src = window.URL.createObjectURL(localMediaStream);
                     }
                     webcamStream = localMediaStream;
-                    startCounter();
+                    setTimeout(() => {
+                        const canvasElement = document.querySelector("canvas");
+                        takePhoto(videoElement, canvasElement);
+                        setLayout("predicting");
+                    }, 3000);
                 },
                 // errorCallback
-                function (err) {
+                function(err) {
                     console.log("The following error occured: " + err);
                 }
             );
@@ -121,6 +189,6 @@ Goal:
         }
     }
 
-    const videoElement = document.querySelector('video');
-    bindCamera(videoElement);
+    setLayout("start");
+    bindCamera();
 ```

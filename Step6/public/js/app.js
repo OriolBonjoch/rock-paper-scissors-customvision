@@ -97,7 +97,7 @@ function init() {
         counterTimerTick();
     };
 
-    const processPrediction = (prediction, enginePick) => {
+    const showResults = (prediction, enginePick) => {
         const userPickElement = appContainer.querySelector('.user-pick');
         const enginePickElement = appContainer.querySelector('.bot-pick-img');
         const resultsElement = appContainer.querySelector('.pick-result');
@@ -122,7 +122,7 @@ function init() {
                 // Success!
                 const prediction = JSON.parse(request.responseText).prediction.toLowerCase();
                 const enginePick = getEnginePick();
-                processPrediction(prediction, enginePick);
+                showResults(prediction, enginePick);
             } else {
                 console.error(request);
             }
@@ -157,6 +157,7 @@ function init() {
 
         // Check that getUserMedia is supported
         if (navigator.getUserMedia) {
+            restartButtonElement.addEventListener("click", () => setLayout("start"));
             navigator.getUserMedia(
                 // constraints
                 {
@@ -180,6 +181,7 @@ function init() {
         } else {
             console.log("getUserMedia not supported");
             setLayout("uploadfile");
+            restartButtonElement.addEventListener("click", () => setLayout("uploadfile"));
 
             const canvasElement = document.querySelector("canvas");
             const canvasContext = canvasElement.getContext('2d');
@@ -201,7 +203,6 @@ function init() {
     setLayout("start")
     bindCamera();
     startButtonElement.addEventListener("click", startBattle);
-    restartButtonElement.addEventListener("click", () => setLayout("start"));
 }
 
 function onDocumentReady(fn) {

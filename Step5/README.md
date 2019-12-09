@@ -4,93 +4,75 @@ Goal:
 * Show opponents move
 
 ## Changes in public/index.html
+
+Update opponents container with its pick
 ```HTML
-  <main class="appContainer" id="appContainer">
-    <div class="appPanel">
-        <div class="appResults" id="appResults">
-          <div class="answer"><span>User:&nbsp;</span><span class="appUserAnswer value">-</span></div>
-          <div class="answer"><span>AI:&nbsp;</span><span class="appEngineAnswer value">-</span></div>
-        </div>
-        <div class="appRestart"><button id="appRestartButton" class="appRestartButton hide">NEW GAME</button></div>
+<div class="opponent-container">
+    <img class="bot-player" src="img/bot.png" alt="engine player">
+    <div class="bot-pick">
+        <img class="bot-pick-img" src="img/bot/rock.png" alt="engine pick">
     </div>
-    <div class="appUserInput">
-          <video id="video" autoplay></video>
-          <div class="appCanvasContainer">
-              <canvas class="appCanvas" id="myCanvas"></canvas>
-          </div>
-    </div>
-    <div class="appVersusLabel"></div>
-    <div class="appEnginePick"></div>
-  </main>
+</div>
 ```
 
 ## Changes in public/css/app.css
 ``` CSS
-  .appContainer .appUserInput {
-    ...
-    height: 50%;
-    ...
-  }
+.bot-pick {
+    height: 10vw;
+    width: 10vw;
+    border-radius: 100%;
+    background: #492f93;
+    box-shadow: inset 0px 0px 0px 2px #492f93;
+    box-sizing: border-box;
+}
 
-    /** AI move **/
-
-    .appContainer .appVersusLabel {
-        height: 10%;
-        background: url('../img/versus_sign.png') 0 0 no-repeat;
-        background-size: contain;
-        background-position: center center;
-    }
-
-    .appContainer .appEnginePick {
-        height: 20%;
-        background: url('../img/thinking.svg') 0 0 no-repeat;
-        background-size: contain;
-        background-position: center center;
-    }
-
-    .appContainer .appEnginePick.rock {
-        background-image: url('../img/rock.png');
-    }
-
-    .appContainer .appEnginePick.paper {
-        background-image: url('../img/paper.png');
-    }
-
-    .appContainer .appEnginePick.scissors {
-        background-image: url('../img/scissors.png');
-    }
+.bot-pick img {
+    width: 100%;
+    height: auto;
+}
 ```
 
 ## Changes in public/js/app.js
+Add picks and engine pick logic as global variables
 ```javascript
 // Global variables
 ...
-const picks = ["rock", "paper", "scissors"];
-const getEnginePick = () => {
-    return picks[Math.floor(Math.random() * picks.length)];
+const picks = ["rock", "paper", "scissors", "lizard", "spock"];
+const getEnginePick = () => picks[Math.floor(Math.random() * picks.length)];
+```
+
+Update setLayout elements arrays
+```javascript
+const elements = [
+    "video", "canvas", ".user-pick",
+    ".bot-player", ".bot-pick",
+    ".start-button", ".app-counter", ".restart-button"
+];
+
+const visibleElements = {
+    "start": ["video", ".start-button", ".bot-player"],
+    "countdown": ["video", ".app-counter", ".bot-player"],
+    "predicting": ["canvas", ".app-counter", ".bot-player"],
+    "results": ["canvas", ".user-pick", ".app-counter", ".bot-pick", ".restart-button"]
 };
-...
-startCounter()
-    ...
-    // Clear elements styles
-    canvasElement.classList.add('hide');
-    appRestartButton.classList.add('hide');
-    const enginePickElement = document.querySelector('.appEnginePick');
-    picks.forEach(pickLabel => {
-        enginePickElement.classList.remove(pickLabel);
-    });
-...
-processPrediction = (prediciton, enginePick) => {
-    appResults.querySelector(".appUserAnswer").innerHTML = prediciton;
-    appResults.querySelector(".appEngineAnswer").innerHTML = enginePick;
-    document.querySelector('.appEnginePick').classList.add(enginePick);
-    appRestartButton.classList.remove('hide');
-};
-...
-submitImageFromCanvas()
-    ...
-    // Success!
-    const prediction = JSON.parse(request.responseText).prediction;
+```
+
+Add engine pick logic to showResults method
+```javascript
+
+    const showResults = (prediction, enginePick) => {
+        const userPickElement = appContainer.querySelector('.user-pick');
+        const enginePickElement = appContainer.querySelector('.bot-pick-img');
+
+        userPickElement.src = 'img/user/' + prediction + '.png';
+        enginePickElement.src = 'img/bot/' + enginePick + '.png';
+
+        setLayout("results");
+    };
+```
+
+Inside submitImageFromCanvas method add engine pick and show results call
+```javascript
     const enginePick = getEnginePick();
-    processPrediction(prediction, enginePick);
+    showResults(prediction, enginePick);
 ```
