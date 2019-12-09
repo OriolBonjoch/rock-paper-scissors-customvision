@@ -33,13 +33,17 @@ Outline the file contents of the repository. It helps users navigate the codebas
 
 ## Azure Subscription
 
-An ARM template is provided so you can create the whole infrastructure required for this training (an Azure application service and )
+An ARM template is provided so you can create the whole infrastructure required for this training (an App Service with its Service Plan and two Cognitive Services).
+Deploy pressing the following button and filling up the required parameters
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOriolBonjoch%2Frock-paper-scissors-customvision%2Fmaster%2Fdeployment.json"><img src="/assets/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOriolBonjoch%2Frock-paper-scissors-customvision%2Fmaster%2Fdeployment.json"><img src="assets/deploy-to-azure.png" alt="Deploy to Azure"/></a>
+
+* Fill resource group name and its location.
+  ![Resource deployment form filled](assets/screenshots/0_resource_deployment_form_filled.png)
 
 * Open your resource group and verify that you have the following resources: App Service Plan, App Service and two Cognitive Services
 
-  ![Open your resource group and verify that you have the following resources: App Service Plan, App Service and two Cognitive Services](assets/screenshots/0_resource_group_list_final.JPG)
+  ![Open your resource group and verify that you have the following resources: App Service Plan, App Service and two Cognitive Services](assets/screenshots/0_resources_deployed.png)
 
 ## Custom Vision
 
