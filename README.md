@@ -1,19 +1,18 @@
 --- 
-description: "Code and tutorial for Rock-paper-scissors game used at Azure Custom Vision hands-on workshop"
+description: "Code and tutorial for rock-paper-scissors-lizard-spock game used at Azure Custom Vision hands-on workshop"
 languages: 
   - javascript
 page_type: sample
 products: 
   - azure
   - azure-cognitive-services
-urlFragment: rock-paper-scissors-customvision
+urlFragment: rock-paper-scissors-lizard-spock-customvision
 ---
 
-# Rock-paper-scissors
-Code and tutorial for "Rock-paper-scissors" game used at Azure Custom Vision hands-on workshop.
+# Rock-paper-scissors-lizard-spock
+Code and tutorial for "rock-paper-scissors-lizard-spock" game used at Azure Custom Vision hands-on workshop.
 
 ## Contents
-
 Outline the file contents of the repository. It helps users navigate the codebase, build configuration and any related assets.
 
 | File/folder       | Description                                |
@@ -49,12 +48,13 @@ Deploy pressing the following button and filling up the required parameters
 
 ### Sign in https://www.customvision.ai/ using created Azure account 
   ![Sign in https://www.customvision.ai/ using created Azure account](assets/screenshots/0_customvision_signin.JPG)
+  
 ### Create a new Custom Vision project
 * Click "New Project"
 
 ![Click "New Project"](assets/screenshots/0_customvision_projects_blank.JPG)
 
-* Fill-in the form (Name - "RPS", Resource - "RPSCustomVision[F0]", Project Type - "Classification", Classification Types - "MMulticlass", Domains - "General") and click "Create project"
+* Fill-in the form (Name - "RPSLS", Resource - "rpsls-customvision [F0]", Project Type - "Classification", Classification Types - "Multiclass", Domains - "General") and click "Create project"
 
 ![Fill-in the form and click "Create project"](assets/screenshots/0_customvision_projects_new.JPG)
 
